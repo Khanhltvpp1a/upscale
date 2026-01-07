@@ -1,0 +1,11 @@
+{
+  "name": "alcomplex-proxy-app",
+  "version": "1.0.0",
+  "description": "Proxy server for Alcomplex app on Vercel",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  }
+}
+

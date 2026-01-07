@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alcomplex</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        html, body {
+            min-height: 100%;
+            height: auto;
+            margin: 0;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('images/nen_pqx83c_mhvmcx.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        @media (min-width: 1024px) {
+            html, body {
+                height: 100%;
+                overflow: hidden;
+            }
+            body {
+                padding: 2rem;
+            }
+            .tab-button {
+                padding: 0.75rem 1.5rem !important;
+                font-size: 1rem !important;
+            }
+        }
+
+        .title-shadow {
+            text-shadow: 0px 3px 5px rgba(0, 0, 0, 0.8);
+        }
+
+        .subtitle-shadow {
+             text-shadow: 0px 2px 3px rgba(0, 0, 0, 1.0);
+        }
+
+        .subtitle-text {
+            font-weight: 300;
+            line-height: 1.2;
+        }
+
+        .tab-button {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .tab-button .tab-text {
+            transition: transform 0.3s ease;
+            transform: scale(1);
+        }
+
+        .tab-button.active {
+            background-color: #FF5722;
+        }
+
+        .tab-button.active .tab-text {
+            transform: scale(1.15);
+        }
+
+        .social-icon {
+            margin: 0 0.5rem;
+            display: inline-block;
+        }
+
+        .upload-area {
+            border: 2px dashed #4B5563;
+            background-color: #2D3748;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-prompt {
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .upload-area-preview {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+            pointer-events: none;
+        }
+        
+        @media (min-width: 1024px) {
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 8px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: #2D3748;
+                border-radius: 10px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #4B5563;
+                border-radius: 10px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: #6B7280;
+            }
+        }
+
+        .loading-gif {
+            width: 150px;
+            height: 150px;
+            mix-blend-mode: screen;
+        }
+        
+        @media (min-width: 640px) {
+            .loading-gif {
+                width: 200px;
+                height: 200px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .loading-gif {
+                width: 250px;
+                height: 250px;
+            }
+        }
+        
+        .corner-hotspot {
+            position: absolute;
+            z-index: 25;
+            padding: 1rem;
+        }
+        .hover-btn {
+            background-color: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            opacity: 1;
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+            pointer-events: auto;
+            white-space: nowrap;
+        }
+        .animate-from-left { transform: translateX(0); }
+        .animate-from-right { transform: translateX(0); }
+        
+        .preview-container { cursor: default; }
+        .preview-container.grabbing { cursor: default; }
+
+        #image-compare-container { 
+            display: none;
+            background-image: none; 
+            background-size: cover; 
+            background-position: center;
+            cursor: default;
+        }
+
+        #slider-handle {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-900">
+
+    <div class="flex flex-col w-full max-w-7xl h-full justify-center mx-auto">
+
+        <div class="flex flex-row gap-4 flex-shrink-0">
+             <div class="hidden lg:block lg:w-[400px] flex-shrink-0"></div>
+
+             <div class="w-full lg:flex-1 text-center mb-4 lg:mb-8">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold title-shadow mb-2">Alcomplex</h1>
+
+                <p class="text-white text-sm lg:text-base subtitle-text subtitle-shadow">Phát triển bởi AIAI Studio</p>
+                <p class="text-white text-sm lg:text-base subtitle-text subtitle-shadow mt-0.5">Đồng hành bảo trợ phát triển VietCG</p>
+             </div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row w-full flex-grow gap-4 lg:overflow-hidden lg:min-h-0">
+
+            <div class="w-full lg:w-[400px] flex-shrink-0 flex flex-col gap-4">
+                <div class="flex bg-[#1D293B] p-1 rounded-full shadow-lg flex-shrink-0">
+                    <button id="tab-taoa" class="tab-button flex-1"><span class="tab-text">Tạo ảnh</span></button>
+                    <button id="tab-upscale" class="tab-button active flex-1"><span class="tab-text">Upscale</span></button>
+                    <button id="tab-thuvienca" class="tab-button flex-1"><span class="tab-text">Thư viện</span></button>
+                </div>
+
+                <div id="tab-content-container" class="bg-[#1D293B] rounded-lg p-6 shadow-lg lg:flex-grow flex flex-col justify-between lg:overflow-hidden">
+
+                    <div class="lg:flex-grow lg:overflow-y-auto custom-scrollbar lg:pr-2 lg:min-h-0">
+                        <div id="content-upscale" class="tab-content">
+                            
+                            <div class="flex items-center gap-2 mb-4">
+                                <h2 class="text-lg sm:text-xl font-bold">Tải ảnh lên</h2>
+                                <div class="relative group cursor-help">
+                                    <i class="fas fa-exclamation-circle text-red-500 text-lg sm:text-xl"></i>
+                                    <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-3 w-max max-w-[200px] p-2 bg-gray-800 text-white text-xs text-center rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-50 border border-gray-600">
+                                        Lưu ý: chỉ dùng ảnh có dung lượng dưới 4.5Mb
+                                        <div class="absolute right-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-r-gray-800"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="upload-area rounded-lg p-4 mb-6" id="upload-box-upscale">
+                                <input type="file" id="image-upload-upscale" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                                <img id="upload-preview-upscale" class="upload-area-preview" alt="Preview">
+                                <div class="upload-prompt z-10">
+                                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                                    <p class="text-gray-400">Nhấn vào để tải ảnh lên</p>
+                                    <p class="text-gray-400 text-sm">hoặc kéo thả ảnh vào khung</p>
+                                    <p class="text-gray-400 text-sm">hoặc Ctrl+V để tải ảnh từ bộ nhớ đệm</p>
+                                </div>
+                            </div>
+
+                            <h2 class="text-lg sm:text-xl font-bold mb-4">Chọn mô hình</h2>
+                            <select id="model-select" class="w-full p-3 rounded-lg bg-gray-700 text-white mb-4 border border-gray-600 focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                <option value="seedvr2">SeedVR2</option>
+                                <option value="ultra-detailed">Ultra-detailed upscale</option>
+                                <option value="realesrgan">RealESRGAN</option>
+                            </select>
+
+                            <div class="text-sm text-gray-300 mb-6">
+                                <p><strong class="text-white">RealESRGAN:</strong> thời gian tạo ảnh nhanh nhưng không giữ được nét mặt.</p>
+                                <p><strong class="text-white">SeedVR2:</strong> tạo ảnh chuyên sâu, kết quả tốt hơn và khuôn mặt có độ giống cao hơn nhưng thời gian tạo ảnh lâu.</p>
+                                <p><strong class="text-white">Ultra-detailed upscale:</strong> Tăng cường chi tiết ảnh ở mức độ cao.</p>
+                                <p class="mt-2">Gợi ý: Nếu ảnh quá mờ hoặc có người thì dùng SeedVR2, còn ảnh thông thường dùng RealESRGAN để tạo ảnh nhanh hơn.</p>
+                            </div>
+                        </div>
+
+                        <div id="content-taoa" class="tab-content hidden">
+                            <div class="flex items-center gap-2 mb-4">
+                                <h2 class="text-lg sm:text-xl font-bold">Tải ảnh lên</h2>
+                                <div class="relative group cursor-help">
+                                    <i class="fas fa-exclamation-circle text-red-500 text-lg sm:text-xl"></i>
+                                    <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-3 w-max max-w-[200px] p-2 bg-gray-800 text-white text-xs text-center rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-50 border border-gray-600">
+                                        Lưu ý: chỉ dùng ảnh có dung lượng dưới 4.5Mb
+                                        <div class="absolute right-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-r-gray-800"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="upload-area rounded-lg p-4 mb-6" id="upload-box-taoa">
+                                <input type="file" id="image-upload-taoa" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                                <img id="upload-preview-taoa" class="upload-area-preview" alt="Preview">
+                                <div class="upload-prompt z-10">
+                                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                                    <p class="text-gray-400">Nhấn vào để tải ảnh lên</p>
+                                    <p class="text-gray-400 text-sm">hoặc kéo thả ảnh vào khung</p>
+                                </div>
+                            </div>
+
+                            <h2 class="text-lg sm:text-xl font-bold mb-4">2. Nhập yêu cầu bổ sung</h2>
+                            <textarea id="prompt-input-taoa" rows="5" class="w-full p-3 rounded-lg bg-gray-700 text-white mb-6 border border-gray-600 focus:ring-2 focus:ring-orange-500 focus:border-transparent" placeholder="Nhập thêm prompt bổ sung hoặc để trống..."></textarea>
+                        </div>
+
+                        <div id="content-thuvienca" class="tab-content hidden">
+                            <h2 class="text-lg sm:text-xl font-bold mb-4">Thư viện ảnh</h2>
+                            <div id="library-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="create-button-container" class="mt-6">
+                        <button id="btn-create-upscale" class="w-full bg-[#FF5722] hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-full transition-all duration-300 ease-in-out shadow-lg" style="display: none;">Tạo ảnh</button>
+                        <button id="btn-create-taoa" class="w-full bg-[#FF5722] hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-full transition-all duration-300 ease-in-out shadow-lg" style="display: none;">Tạo ảnh</button>
+                    </div>
+
+                    <div class="flex justify-center mt-6 flex-shrink-0">
+                        <a href="https://www.facebook.com/groups/815479533482926" target="_blank" class="social-icon">
+                            <img src="images/fb_dwdwvk_ycvvfx.png" alt="Facebook" class="h-8 object-contain">
+                        </a>
+                        <a href="https://www.youtube.com/watch?v=q-evXtyBtdQ" target="_blank" class="social-icon">
+                           <img src="images/yt_kg0fqn_vkxaxd.png" alt="YouTube" class="h-8 object-contain">
+                        </a>
+                        <a href="https://id.zalo.me/account?continue=http%3A%2F%2Fzalo.me%2Fg%2Fpfgvth223" target="_blank" class="social-icon">
+                             <img src="images/zl_if68rq_z2dbgx.png" alt="Zalo" class="h-8 object-contain">
+                        </a>
+                        <a href="https://raw.githubusercontent.com/Khanhltvpp1a/Media/main/Untitled%20(53).png" target="_blank" class="social-icon">
+                            <img src="images/dn_v0yvko_yulixk.png" alt="Donate" class="h-8 object-contain">
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="display-area" class="w-full lg:flex-1 bg-[#1D293B] rounded-lg p-2 shadow-lg flex items-center justify-center relative overflow-hidden min-h-[50vh] lg:min-h-0">
+                <div id="image-placeholder" class="flex items-center justify-center w-full h-full">
+                    <p class="text-gray-400 text-lg"></p>
+                </div>
+
+                <div id="image-compare-container" class="absolute inset-0 w-full h-full">
+                    <img id="original-image-display" src="" alt="Ảnh gốc" class="absolute inset-0 w-full h-full object-contain select-none" style="display: none;">
+                    
+                    <img id="result-image" src="" alt="Ảnh kết quả" class="absolute inset-0 w-full h-full object-contain select-none">
+                    
+                    <div id="slider-handle" class="absolute top-0 bottom-0 -ml-4 w-8 h-full cursor-ew-resize z-10" style="left: 50%; display: none;">
+                        <div class="relative w-full h-full">
+                            <div id="slider-icon" class="absolute w-8 h-8 bg-black bg-opacity-60 rounded-full flex items-center justify-center text-white opacity-0 transition-opacity pointer-events-none" style="display: none !important;">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18m-4 4l4-4m0 0l-4-4"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="corner-hotspot bottom-0 right-0 flex flex-col items-end space-y-2">
+                        <div id="upscale-quick-btn" class="hover-btn animate-from-right">Upscale</div>
+                        <div id="download-btn" class="hover-btn animate-from-right">Tải xuống</div>
+                    </div>
+                </div>
+
+                <div id="status-overlay" class="absolute inset-0 hidden z-30">
+                    <img id="loading-bg-image" src="" class="absolute inset-0 w-full h-full object-cover">
+                    <div id="loading-overlay-color" class="absolute inset-0" style="background-color: rgba(0, 0, 0, 0.8);"></div>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+                        <img src="images/822910b8281e26cb7dd6b6e320b5d077_ahumiq_jniep6.gif" alt="Đang xử lý..." class="loading-gif">
+                        <p id="status-message" class="text-xl sm:text-2xl text-white font-bold mt-4"></p>
+                        <p id="error-message" class="text-red-400 mt-2 font-semibold"></p>
+                    </div>
+                    <div class="absolute bottom-4 right-4 group">
+                        <button id="cancel-btn" class="bg-red-600 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg transform transition-all hover:scale-110 focus:outline-none" title="Hủy tác vụ">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="upscale-quick-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-[#1D293B] rounded-lg p-6 shadow-lg w-full max-w-sm">
+            <h2 class="text-xl font-bold mb-4 text-white">Chọn mô hình Upscale</h2>
+            <select id="quick-model-select" class="w-full p-3 rounded-lg bg-gray-700 text-white mb-6 border border-gray-600 focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+            </select>
+            <div class="flex gap-4">
+                <button id="cancel-quick-upscale-btn" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full transition">Hủy</button>
+                <button id="start-quick-upscale-btn" class="flex-1 bg-[#FF5722] hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full transition">Upscale</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = { 'tab-taoa': 'content-taoa', 'tab-upscale': 'content-upscale', 'tab-thuvienca': 'content-thuvienca' };
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            const uploadBoxUpscale = document.getElementById('upload-box-upscale');
+            const imageUploadUpscale = document.getElementById('image-upload-upscale');
+            const uploadPreviewUpscale = document.getElementById('upload-preview-upscale');
+            const modelSelect = document.getElementById('model-select');
+            const btnCreateUpscale = document.getElementById('btn-create-upscale');
+
+            const uploadBoxTaoa = document.getElementById('upload-box-taoa');
+            const imageUploadTaoa = document.getElementById('image-upload-taoa');
+            const uploadPreviewTaoa = document.getElementById('upload-preview-taoa');
+            const promptInputTaoa = document.getElementById('prompt-input-taoa');
+            const btnCreateTaoa = document.getElementById('btn-create-taoa');
+
+            const libraryGrid = document.getElementById('library-grid');
+            const staticImages = [
+                'images/9dcf1efcc97c0f34ed24fa218bde15dd.gif_be2iyj_fvuh9l.webp',
+                'https://rh-images.xiaoyaoyou.com/574ffa72e8a033e11d5893895f51d8e9/2025-10-22/be7b6db91d307063a736a4b20bb71c0c.gif',
+                'https://rh-images.xiaoyaoyou.com/574ffa72e8a033e11d5893895f51d8e9/2025-10-22/e918451bc2e53603cbe3df91e957b2d0.gif',
+                'images/5b536c87-75d8-48dd-b453-57855d0dd03e_kx5rkh_codxu9.jpg',
+                'images/d6c49a3c-b22f-4efb-948e-07864b4e2633_ufnhav_rs81pl.jpg',
+                'images/0de726d8-17ad-44f0-bab4-f228d0896084_gkv5gb_vwr8ff.jpg'
+            ];
+
+            const displayArea = document.getElementById('display-area');
+            const imagePlaceholder = document.getElementById('image-placeholder');
+            const imageCompareContainer = document.getElementById('image-compare-container');
+            const originalImageDisplay = document.getElementById('original-image-display');
+            const resultImage = document.getElementById('result-image');
+            const sliderHandle = document.getElementById('slider-handle');
+            const sliderIcon = document.getElementById('slider-icon');
+
+            const statusOverlay = document.getElementById('status-overlay');
+            const statusMessage = document.getElementById('status-message');
+            const errorMessage = document.getElementById('error-message');
+            const loadingBgImage = document.getElementById('loading-bg-image');
+            const loadingOverlayColor = document.getElementById('loading-overlay-color');
+            const cancelBtn = document.getElementById('cancel-btn'); 
+
+            const downloadBtn = document.getElementById('download-btn');
+            const upscaleQuickBtn = document.getElementById('upscale-quick-btn');
+
+            const upscaleQuickModal = document.getElementById('upscale-quick-modal');
+            const quickModelSelect = document.getElementById('quick-model-select');
+            const cancelQuickUpscaleBtn = document.getElementById('cancel-quick-upscale-btn');
+            const startQuickUpscaleBtn = document.getElementById('start-quick-upscale-btn');
+
+            let activeTab = 'tab-upscale';
+            let fileUpscale = null;
+            let fileTaoa = null;
+            
+            let originalImageUrl = null;
+            
+            let imageHistory = [];
+            let currentTaskId = null;
+            let statusInterval = null;
+            let currentResultBlobUrl = null;
+
+            const API_KEY_COUNT = 5;
+            
+            let currentApiKeyIndex = 0;
+
+            const activateTab = (activeTabId) => {
+                activeTab = activeTabId;
+                tabButtons.forEach(button => {
+                    button.classList.remove('active');
+                });
+                document.getElementById(activeTabId).classList.add('active');
+
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById(tabs[activeTabId]).classList.remove('hidden');
+
+                btnCreateUpscale.style.display = 'none';
+                btnCreateTaoa.style.display = 'none';
+                if (activeTabId === 'tab-upscale') {
+                    btnCreateUpscale.style.display = 'block';
+                } else if (activeTabId === 'tab-taoa') {
+                    btnCreateTaoa.style.display = 'block';
+                }
+
+                if (activeTab === 'tab-thuvienca') {
+                    displayHistory();
+                }
+            };
+
+            activateTab('tab-upscale');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    activateTab(button.id);
+                });
+            });
+
+            function handleFileSelect(file, isFromUserInput = false) {
+                if (!file || !file.type.startsWith('image/')) return;
+                
+                if (originalImageUrl && originalImageUrl.startsWith('blob:')) {
+                    URL.revokeObjectURL(originalImageUrl);
+                }
+                originalImageUrl = URL.createObjectURL(file);
+
+                if (currentResultBlobUrl) {
+                    URL.revokeObjectURL(currentResultBlobUrl);
+                    currentResultBlobUrl = null;
+                }
+
+                originalImageDisplay.src = originalImageUrl;
+                originalImageDisplay.style.display = 'none';
+                
+                resultImage.src = originalImageUrl;
+                resultImage.style.display = 'block'; 
+                
+                sliderHandle.style.display = 'none';
+                originalImageDisplay.style.clipPath = 'none'; 
+                resultImage.style.clipPath = 'none';
+                imageCompareContainer.classList.remove('dragging');
+                imagePlaceholder.style.display = 'none';
+                imageCompareContainer.style.display = 'block';
+
+                if (activeTab === 'tab-upscale') {
+                    fileUpscale = file;
+                    uploadPreviewUpscale.src = originalImageUrl;
+                    uploadPreviewUpscale.style.opacity = '1';
+                    uploadBoxUpscale.querySelector('.upload-prompt').style.opacity = '0';
+                } else if (activeTab === 'tab-taoa') {
+                    fileTaoa = file;
+                    uploadPreviewTaoa.src = originalImageUrl;
+                    uploadPreviewTaoa.style.opacity = '1';
+                    uploadBoxTaoa.querySelector('.upload-prompt').style.opacity = '0';
+                }
+            }
+            
+            imageUploadUpscale.addEventListener('change', (e) => handleFileSelect(e.target.files[0], true));
+            uploadBoxUpscale.addEventListener('click', () => imageUploadUpscale.click());
+            uploadBoxUpscale.addEventListener('dragover', (e) => { e.preventDefault(); e.currentTarget.classList.add('border-orange-500'); });
+            uploadBoxUpscale.addEventListener('dragleave', (e) => e.currentTarget.classList.remove('border-orange-500'));
+            uploadBoxUpscale.addEventListener('drop', (e) => { e.preventDefault(); e.currentTarget.classList.remove('border-orange-500'); handleFileSelect(e.dataTransfer.files[0], true); });
+
+            imageUploadTaoa.addEventListener('change', (e) => handleFileSelect(e.target.files[0], true));
+            uploadBoxTaoa.addEventListener('click', () => imageUploadTaoa.click());
+            uploadBoxTaoa.addEventListener('dragover', (e) => { e.preventDefault(); e.currentTarget.classList.add('border-orange-500'); });
+            uploadBoxTaoa.addEventListener('dragleave', (e) => e.currentTarget.classList.remove('border-orange-500'));
+            uploadBoxTaoa.addEventListener('drop', (e) => { e.preventDefault(); e.currentTarget.classList.remove('border-orange-500'); handleFileSelect(e.dataTransfer.files[0], true); });
+
+            document.addEventListener('paste', (event) => {
+                if(activeTab === 'tab-upscale' || activeTab === 'tab-taoa') {
+                    const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+                    for (let i = 0; i < items.length; i++) {
+                        if (items[i].type.indexOf('image') !== -1) {
+                            const blob = items[i].getAsFile();
+                            handleFileSelect(blob, true);
+                            break;
+                        }
+                    }
+                }
+            });
+
+            btnCreateUpscale.addEventListener('click', () => handleImageProcessing('tab-upscale'));
+            btnCreateTaoa.addEventListener('click', () => handleImageProcessing('tab-taoa'));
+            cancelBtn.addEventListener('click', cancelTask);
+
+            function resetState() {
+                if (statusInterval) {
+                    clearInterval(statusInterval);
+                    statusInterval = null;
+                }
+                currentTaskId = null;
+                errorMessage.textContent = '';
+                
+                btnCreateUpscale.disabled = false;
+                btnCreateTaoa.disabled = false;
+                btnCreateUpscale.classList.remove('opacity-50', 'cursor-not-allowed');
+                btnCreateTaoa.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                setUiLoading(false);
+            }
+            
+            function setUiLoading(isLoading, message = '') {
+                if (isLoading) {
+                    statusMessage.textContent = message;
+                    errorMessage.textContent = '';
+                    if (originalImageUrl) {
+                        loadingBgImage.src = originalImageUrl;
+                        loadingBgImage.style.display = 'block';
+                        loadingOverlayColor.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                    } else {
+                        loadingBgImage.style.display = 'none';
+                        loadingOverlayColor.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                    }
+                    statusOverlay.style.display = 'flex'; 
+                } else {
+                    statusOverlay.style.display = 'none';
+                }
+            }
+
+            function fetchProxy(action, payload) {
+                return new Promise((resolve, reject) => {
+                    const attemptRequest = async () => {
+                        try {
+                            let response;
+                            
+                            if (action === 'upload') {
+                                response = await fetch('/api/proxy', {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-Action': 'upload',
+                                        'X-Api-Key-Index': currentApiKeyIndex,
+                                        'X-File-Name': payload.name || 'image.png',
+                                        'Content-Type': payload.type || 'image/png'
+                                    },
+                                    body: payload
+                                });
+                            } else {
+                                response = await fetch('/api/proxy', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        action: action,
+                                        payload: payload,
+                                        apiKeyIndex: currentApiKeyIndex
+                                    })
+                                });
+                            }
+
+                            if (!response.ok) {
+                                throw new Error(`Lỗi proxy server: ${response.status} ${response.statusText}`);
+                            }
+
+                            const result = await response.json();
+
+                            if (result.code !== 0) {
+                                console.warn(`API key index ${currentApiKeyIndex} gặp lỗi (Code: ${result.code}, Msg: ${result.msg}). Đang chuyển key...`);
+                                currentApiKeyIndex++;
+
+                                if (currentApiKeyIndex >= API_KEY_COUNT) {
+                                    currentApiKeyIndex = 0;
+                                    console.log(`Đã dùng hết ${API_KEY_COUNT} API key. Chờ 10s và thử lại từ đầu.`);
+                                    setUiLoading(true, `Hết lượt, đang chờ lại (Lỗi: ${result.code})... `);
+                                    setTimeout(attemptRequest, 10000);
+                                } else {
+                                    console.log(`Thử lại với API key index ${currentApiKeyIndex}.`);
+                                    setUiLoading(true, `Gặp lỗi ${result.code}, đang đổi key...`);
+                                    attemptRequest();
+                                }
+                            } else {
+                                resolve(result);
+                            }
+
+                        } catch (error) {
+                            console.error('Lỗi nghiêm trọng khi gọi proxy:', error);
+                            reject(error);
+                        }
+                    };
+                    
+                    attemptRequest();
+                });
+            }
+            
+            async function handleImageProcessing(forcedTab = null, forcedModel = null, forcedFile = null) {
+                resetState();
+                
+                btnCreateUpscale.disabled = true;
+                btnCreateTaoa.disabled = true;
+                btnCreateUpscale.classList.add('opacity-50', 'cursor-not-allowed');
+                btnCreateTaoa.classList.add('opacity-50', 'cursor-not-allowed');
+
+                let webappId, nodeInfoList = [];
+                let fileToUpload = null;
+                let currentActiveTab = forcedTab || activeTab;
+
+                if (currentActiveTab === 'tab-upscale') {
+                    fileToUpload = forcedFile || fileUpscale;
+                    if (!fileToUpload) {
+                        alert("Vui lòng tải ảnh lên để Upscale.");
+                        resetState();
+                        return;
+                    }
+
+                    const selectedModel = forcedModel || modelSelect.value;
+                    
+                    if (selectedModel === 'seedvr2') {
+                        webappId = "1980834839203106817";
+                        nodeInfoList.push({ nodeId: "28", fieldName: "image", fieldValue: "", description: "image" });
+                    } 
+                    else if (selectedModel === 'ultra-detailed') { 
+                        webappId = "1955475385950486530";
+                        nodeInfoList.push({ nodeId: "6", fieldName: "image", fieldValue: "", description: "Load image" });
+                    }
+                    else {
+                        webappId = "1965717590683353089";
+                        nodeInfoList.push({ nodeId: "33", fieldName: "image", fieldValue: "", description: "Image" });
+                    }
+                } 
+                else if (currentActiveTab === 'tab-taoa') {
+                    fileToUpload = fileTaoa;
+                    const promptText = promptInputTaoa.value.trim();
+
+                    if (!fileToUpload && !promptText) {
+                        alert("Vui lòng tải ảnh lên hoặc nhập yêu cầu (prompt).");
+                        resetState();
+                        return;
+                    }
+
+                    webappId = "1980849016827236354";
+                    if (fileToUpload) {
+                        nodeInfoList.push({ nodeId: "94", fieldName: "image", fieldValue: "", description: "image" });
+                    }
+                    if (promptText) {
+                        nodeInfoList.push({ nodeId: "139", fieldName: "text", fieldValue: promptText, description: "text" });
+                    } else {
+                        nodeInfoList.push({ nodeId: "139", fieldName: "text", fieldValue: "", description: "text" });
+                    }
+                }
+
+                setUiLoading(true, 'Đang tải ảnh lên...');
+                try {
+                    let uploadedImageUrl = null;
+                    if (fileToUpload) {
+                        const uploadResult = await fetchProxy('upload', fileToUpload);
+                        if (!uploadResult.data || !uploadResult.data.fileName) {
+                            throw new Error('Proxy không trả về fileName sau khi upload.');
+                        }
+                        uploadedImageUrl = uploadResult.data.fileName;
+                        
+                        const imageNode = nodeInfoList.find(node => node.fieldName === 'image');
+                        if (imageNode) {
+                            imageNode.fieldValue = uploadedImageUrl;
+                        }
+                    }
+
+                    setUiLoading(true, 'Đang khởi tạo tác vụ...');
+                    
+                    const runPayload = { webappId, nodeInfoList };
+                    const runResult = await fetchProxy('run', runPayload);
+                    
+                    if (runResult.code !== 0 || !runResult.data.taskId) {
+                         throw new Error(`API không khởi động được tác vụ: ${runResult.msg || 'Không nhận được Task ID'}`);
+                    }
+                    currentTaskId = runResult.data.taskId;
+
+                    setUiLoading(true, 'Đang xử lý...');
+                    statusInterval = setInterval(checkTaskStatus, 3000);
+
+                } catch (error) {
+                    console.error('Lỗi trong quy trình:', error);
+                    errorMessage.textContent = error.message;
+                    setUiLoading(false);
+                    resetState();
+                }
+            }
+            
+            async function checkTaskStatus() {
+                const taskIdToCheck = currentTaskId;
+                if (!taskIdToCheck) {
+                    if (statusInterval) clearInterval(statusInterval);
+                    statusInterval = null;
+                    return;
+                }
+
+                try {
+                    const payload = { taskId: taskIdToCheck };
+                    const result = await fetchProxy('status', payload);
+
+                    if (currentTaskId !== taskIdToCheck) {
+                        return; 
+                    }
+
+                    if (result.code !== 0) throw new Error(`Lỗi API trạng thái: ${result.msg}`);
+
+                    const statusData = result.data || {};
+                    const status = typeof statusData === 'string' ? statusData : statusData.status;
+
+                    switch (status) {
+                        case 'SUCCESS':
+                            clearInterval(statusInterval);
+                            statusInterval = null;
+                            fetchTaskOutput(taskIdToCheck); 
+                            break;
+                        case 'RUNNING': case 'PROCESSING':
+                            const progress = statusData.progress ? Math.round(statusData.progress * 100) : 0;
+                            setUiLoading(true, `Đang xử lý... ${progress > 0 ? progress + '%' : ''}`);
+                            break;
+                        case 'IN_QUEUE': setUiLoading(true, 'Đang xử lý...'); break;
+                        case 'FAILED':
+                            clearInterval(statusInterval);
+                            statusInterval = null;
+                            throw new Error(statusData.failReason || 'Tác vụ thất bại trên server.');
+                        default:
+                            setUiLoading(true, `Trạng thái: ${status || 'Không xác định'}`);
+                            break;
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi kiểm tra trạng thái:', error);
+                    errorMessage.textContent = error.message;
+                    if (currentTaskId === taskIdToCheck) {
+                        setUiLoading(false);
+                        if (statusInterval) clearInterval(statusInterval);
+                        statusInterval = null;
+                    }
+                }
+            }
+
+            async function fetchTaskOutput(taskId) {
+                try {
+                    const payload = { taskId: taskId };
+                    const result = await fetchProxy('outputs', payload);
+                    
+                    if (result.code !== 0) throw new Error(`API báo lỗi: ${result.msg || 'Lỗi không xác định'}`);
+                    if (!result.data) throw new Error('API không trả về dữ liệu kết quả.');
+
+                    const output = result.data.outputs || result.data;
+                    let finalImageUrl = null;
+                    
+                    const findImageUrl = (obj) => {
+                        if (!obj || typeof obj !== 'object') return null;
+                        for (const key in obj) {
+                            if (typeof obj[key] === 'object' && obj[key] !== null) {
+                                if (obj[key]?.images?.[0]?.url) return obj[key].images[0].url;
+                                if (Array.isArray(obj[key]) && obj[key][0]?.url) return obj[key][0].url;
+                                if (obj[key]?.fileUrl) return obj[key].fileUrl;
+                                const nestedUrl = findImageUrl(obj[key]);
+                                if (nestedUrl) return nestedUrl;
+                            }
+                        }
+                        return null;
+                    };
+                    
+                    if (output?.images?.[0]?.url) {
+                        finalImageUrl = output.images[0].url;
+                    } else if (Array.isArray(output) && output[0]?.url) {
+                        finalImageUrl = output[0].url;
+                    } else if (output?.fileUrl) {
+                        finalImageUrl = output.fileUrl;
+                    } else {
+                        finalImageUrl = findImageUrl(output);
+                    }
+
+                    if (finalImageUrl) {
+                        saveImageToHistory(finalImageUrl);
+                        
+                        setUiLoading(true, 'Đang tải ảnh kết quả...');
+                        try {
+                            const imageResponse = await fetch(finalImageUrl);
+                            if (!imageResponse.ok) {
+                                throw new Error(`Không thể tải ảnh kết quả (status: ${imageResponse.status})`);
+                            }
+                            const imageBlob = await imageResponse.blob();
+
+                            if (currentResultBlobUrl) {
+                                URL.revokeObjectURL(currentResultBlobUrl);
+                            }
+                            
+                            currentResultBlobUrl = URL.createObjectURL(imageBlob);
+                            resultImage.src = currentResultBlobUrl;
+                        
+                        } catch (fetchError) {
+                            console.error('Lỗi khi fetch ảnh kết quả:', fetchError);
+                            resultImage.src = finalImageUrl;
+                        }
+                        
+                        resultImage.style.display = 'block';
+                        
+                        sliderHandle.style.display = 'none';
+                        originalImageDisplay.style.display = 'none';
+                        originalImageDisplay.style.clipPath = 'none';
+                        resultImage.style.clipPath = 'none';
+
+                    } else { 
+                        console.error("Không tìm thấy URL hình ảnh trong dữ liệu trả về:", output);
+                        throw new Error('Không tìm thấy hình ảnh trong kết quả trả về.'); 
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi lấy kết quả:', error);
+                    errorMessage.textContent = error.message;
+                } finally {
+                    if (currentTaskId === taskId) {
+                        resetState();
+                        currentTaskId = null;
+                    }
+                }
+            }
+
+            async function cancelTask() {
+                if (!currentTaskId) return;
+                const taskIdToCancel = currentTaskId;
+                const oldTaskId = currentTaskId;
+                resetState();
+                
+                try {
+                    const payload = { taskId: taskIdToCancel };
+                    fetchProxy('cancel', payload)
+                        .then(result => {
+                            if (result.code !== 0) {
+                                console.warn(`API báo lỗi khi hủy tác vụ: ${result.msg}`);
+                            } else {
+                                console.log(`Tác vụ ${taskIdToCancel} đã được yêu cầu hủy.`);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Lỗi khi gửi yêu cầu hủy tác vụ:', error);
+                        });
+
+                } catch (error) { 
+                    console.error('Lỗi đồng bộ khi hủy tác vụ:', error); 
+                } finally {
+                    if(currentTaskId === oldTaskId) {
+                         currentTaskId = null;
+                    }
+                }
+            }
+            
+            upscaleQuickBtn.addEventListener('click', () => {
+                const hasOriginal = originalImageDisplay.src && !originalImageDisplay.src.startsWith('https://placehold.co');
+                const hasResult = resultImage.src && !resultImage.src.startsWith('https://placehold.co');
+
+                if (hasOriginal || hasResult) {
+                    quickModelSelect.value = modelSelect.value;
+                    upscaleQuickModal.style.display = 'flex';
+                } else {
+                    alert("Vui lòng tải ảnh lên hoặc tạo một ảnh trước khi Upscale.");
+                }
+            });
+
+            cancelQuickUpscaleBtn.addEventListener('click', () => {
+                upscaleQuickModal.style.display = 'none';
+            });
+
+            startQuickUpscaleBtn.addEventListener('click', async () => {
+                upscaleQuickModal.style.display = 'none';
+                
+                const imageSrcToUse = (resultImage.src && !resultImage.src.startsWith('https://placehold.co')) ? resultImage.src : (originalImageDisplay.src && !originalImageDisplay.src.startsWith('blob:') && !originalImageDisplay.src.startsWith('https://placehold.co')) ? originalImageDisplay.src : null;
+                
+                let fileToProcess;
+
+                if (imageSrcToUse) {
+                    try {
+                        setUiLoading(true, 'Đang chuẩn bị ảnh...');
+                        const response = await fetch(imageSrcToUse);
+                        if (!response.ok) throw new Error('Không thể tải ảnh hiện tại.');
+                        const blob = await response.blob();
+                        fileToProcess = new File([blob], "quick_upscale_image.png", { type: blob.type });
+                    } catch (error) {
+                        console.error("Lỗi khi fetch ảnh để upscale:", error);
+                        alert("Đã xảy ra lỗi khi chuẩn bị ảnh.");
+                        setUiLoading(false);
+                        return;
+                    }
+                } else if (fileUpscale) {
+                    fileToProcess = fileUpscale;
+                } else if (fileTaoa) {
+                     fileToProcess = fileTaoa;
+                } else {
+                    alert("Không tìm thấy ảnh để xử lý.");
+                    return;
+                }
+
+                if (originalImageUrl && originalImageUrl.startsWith('blob:')) {
+                    URL.revokeObjectURL(originalImageUrl);
+                }
+                originalImageUrl = URL.createObjectURL(fileToProcess);
+                originalImageDisplay.src = originalImageUrl;
+                originalImageDisplay.style.display = 'none';
+                resultImage.src = '';
+                resultImage.style.display = 'none';
+                sliderHandle.style.display = 'none';
+                originalImageDisplay.style.clipPath = 'none';
+                fileUpscale = fileToProcess;
+                
+                const selectedModel = quickModelSelect.value;
+
+                await handleImageProcessing('tab-upscale', selectedModel, fileToProcess);
+            });
+
+
+            downloadBtn.addEventListener('click', async () => { 
+                const imageUrlToDownload = (resultImage.src && !resultImage.src.startsWith('https://placehold.co')) ? resultImage.src : (originalImageDisplay.src && !originalImageDisplay.src.startsWith('blob:')) ? originalImageDisplay.src : null; 
+                if (!imageUrlToDownload) { 
+                    alert("Không có ảnh kết quả để tải xuống."); 
+                    return; 
+                } 
+                try { 
+                    const response = await fetch(imageUrlToDownload); 
+                    if (!response.ok) throw new Error('Không thể fetch ảnh để tải xuống.'); 
+                    const blob = await response.blob(); 
+                    const link = document.createElement('a'); 
+                    link.href = URL.createObjectURL(blob); 
+                    link.download = `alcomplex_${Date.now()}.png`; 
+                    document.body.appendChild(link); 
+                    link.click(); 
+                    document.body.removeChild(link); 
+                    URL.revokeObjectURL(link.href); 
+                } catch (error) { 
+                    console.error("Lỗi tải xuống:", error); 
+                    window.open(imageUrlToDownload, '_blank');
+                } 
+            });
+
+            function saveImageToHistory(url) {
+                if (!url || imageHistory.includes(url)) return;
+                imageHistory.unshift(url);
+                if (imageHistory.length > 51) imageHistory.pop();
+                localStorage.setItem('aiImageHistory', JSON.stringify(imageHistory));
+            }
+            
+            function loadImageHistory() {
+                const storedHistory = localStorage.getItem('aiImageHistory');
+                if (storedHistory) imageHistory = JSON.parse(storedHistory);
+            }
+
+            function createLibraryItem(url) {
+                const container = document.createElement('div');
+                container.className = 'aspect-square w-full rounded-lg overflow-hidden bg-gray-700 cursor-pointer group relative';
+                
+                const img = document.createElement('img');
+                img.src = url;
+                img.loading = 'lazy';
+                img.className = 'w-full h-full object-contain transition-transform duration-300 group-hover:scale-110';
+                
+                const overlay = document.createElement('div');
+                overlay.className = 'absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center';
+                
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-eye text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300';
+                
+                overlay.appendChild(icon);
+                container.appendChild(img);
+                container.appendChild(overlay);
+
+                container.addEventListener('click', () => {
+                    window.open(url, '_blank');
+                });
+                
+                return container;
+            }
+
+            function displayHistory() {
+                libraryGrid.innerHTML = '';
+                
+                staticImages.forEach(url => {
+                    libraryGrid.appendChild(createLibraryItem(url));
+                });
+
+                imageHistory.forEach(url => {
+                    libraryGrid.appendChild(createLibraryItem(url));
+                });
+
+                if (staticImages.length === 0 && imageHistory.length === 0) { 
+                    libraryGrid.innerHTML = '<p class="col-span-full text-center text-gray-500">Chưa có ảnh nào.</p>'; 
+                }
+            }
+
+            document.body.addEventListener('touchstart', function(){
+                document.body.classList.add('touch');
+            }, { once: true });
+
+            loadImageHistory();
+            
+            quickModelSelect.innerHTML = modelSelect.innerHTML;
+        });
+    </script>
+</body>
+</html>
